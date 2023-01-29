@@ -14,11 +14,11 @@ target_include_directories(${CMAKE_PROJECT_NAME}
     PRIVATE
         "${CMAKE_CURRENT_SOURCE_DIR}/libvlcpp")
 
+set(libvlc_sdk_dir "${CMAKE_CURRENT_SOURCE_DIR}/libvlc_sdk")
+target_include_directories(${CMAKE_PROJECT_NAME}
+    PRIVATE
+        ${libvlc_sdk_dir}/include)
 if(WIN32)
-    set(libvlc_sdk_dir "${CMAKE_CURRENT_SOURCE_DIR}/libvlc_sdk")
-    target_include_directories(${CMAKE_PROJECT_NAME}
-        PRIVATE
-            ${libvlc_sdk_dir}/include)
     if(MINGW)
         target_link_libraries(${CMAKE_PROJECT_NAME}
             PRIVATE
