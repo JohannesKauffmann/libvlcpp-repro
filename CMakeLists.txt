@@ -19,10 +19,19 @@ if(WIN32)
     target_include_directories(${CMAKE_PROJECT_NAME}
         PRIVATE
             ${libvlc_sdk_dir}/include)
-    target_link_libraries(${CMAKE_PROJECT_NAME}
-        PRIVATE
-            ${libvlc_sdk_dir}/lib/libvlc.dll
-            ${libvlc_sdk_dir}/lib/libvlccore.dll)
+    if(MINGW)
+        target_link_libraries(${CMAKE_PROJECT_NAME}
+            PRIVATE
+                ${libvlc_sdk_dir}/lib/libvlc.dll
+                ${libvlc_sdk_dir}/lib/libvlccore.dll)
+    elseif(MSVC)
+        target_link_libraries(${CMAKE_PROJECT_NAME}
+                PRIVATE
+                    ${libvlc_sdk_dir}/lib/libvlc.lib
+                    ${libvlc_sdk_dir}/lib/libvlccore.lib)
+    endif()
+    file(COPY ${libvlc_sdk_dir}/lib/libvlc.dll ${libvlc_sdk_dir}/lib/libvlccore.dll
+     DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 else()
     target_link_libraries(${CMAKE_PROJECT_NAME}
         PRIVATE
