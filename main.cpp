@@ -1,32 +1,27 @@
+#include "vlcpp/vlc.hpp"
+#include <thread>
 #include <iostream>
 
-#include <vlcpp/vlc.hpp>
-
-#include <synchapi.h>
-
-void onPositionChanged(float newPos)
+int main(int ac, char** av)
 {
-    std::cout << "New pos: " << newPos << std::endl;
-}
-
-int main(int argc, char *argv[])
-{
-    const char *args[1] = { "-q" };
-    VLC::Instance inst(sizeof(args), args);
-    VLC::MediaPlayer mp(inst);
-    VLC::Media video(inst, "video.mp4",
-                     VLC::Media::FromPath);
-
-    mp.setMedia(video);
-
-    auto em = mp.eventManager();
-    em.onPositionChanged(onPositionChanged);;
-
+    if (ac < 2)
+    {
+        std::cerr << "usage: " << av[0] << " <file to play>" << std::endl;
+        return 1;
+    }
+    auto instance = VLC::Instance(0, nullptr);
+#if LIBVLC_VERSION_INT >= LIBVLC_VERSION(4, 0, 0, 0)
+    auto media = VLC::Media(av[1], VLC::Media::FromPath);
+    auto mp = VLC::MediaPlayer(instance, media);
+#else
+    auto media = VLC::Media(instance, av[1], VLC::Media::FromPath);
+    auto mp = VLC::MediaPlayer(media);
+#endif
     mp.play();
-
-    Sleep(3000);
-
+    std::this_thread::sleep_for( std::chrono::seconds( 10 ) );
+#if LIBVLC_VERSION_INT >= LIBVLC_VERSION(4, 0, 0, 0)
+    mp.stopAsync();
+#else
     mp.stop();
-
-    return 0;
+#endif
 }
